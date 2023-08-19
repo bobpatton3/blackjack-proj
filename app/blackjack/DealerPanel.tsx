@@ -3,7 +3,7 @@
 import { useContext, useState } from "react";
 import { CardType, DeckDataContext, NewDeckInfoType } from "@/context/deckDataContext";
 import PlayerPanel from "./PlayerPanel"
-import DeckUtility from "./DeckUtility";
+import DeckOfCardsAPIUtility from "./DeckOfCardsAPIUtility";
 
 export default function DealerPanel() {
     const [deckLoaded, setDeckLoaded] = useState<boolean>(false);
@@ -28,10 +28,10 @@ export default function DealerPanel() {
     function shuffleOnClick() {
         if (!deckLoaded) {
             console.log("shuffleOnClick: loading new deck ");
-            DeckUtility.getADeck(setDeck);
+            DeckOfCardsAPIUtility.getADeck(setDeck);
         } else {
             console.log("shuffleOnClick: deckID = " + deckID);
-            DeckUtility.shuffleDeck(deckID, setReshuffledDeck);
+            DeckOfCardsAPIUtility.shuffleDeck(deckID, setReshuffledDeck);
         }
     }
 
