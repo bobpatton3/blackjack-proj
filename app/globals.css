@@ -2,26 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+*{
+  box-sizing: border-box;
 }
-
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: beige;
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  font-size: 14px;
+
+}
+.dealersTitleDiv {
+  margin: 1.5rem 2rem 0.5rem 2rem;
+  font-size: 16pt;
+}
+.defaultButton {
+  border: black;
+  background-color: green;
+  color: white;
+  padding: 0.3rem 0.6rem;
+  font-size: 12pt;
+  margin: 1rem;
+  border-radius: 0.2rem;
+}
+.dealerCardImagesDiv {
+  display: flex;
+}
+.singleCardImageDiv {
+  margin: 2rem;
 }
