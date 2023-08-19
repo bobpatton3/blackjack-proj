@@ -4,7 +4,7 @@ import DealerPanel from "./DealerPanel";
 
 export default function Blackjack() {
     return (
-        <div>
+        <div className="centerOnPage">
             <DealerPanel />
         </div >
     )

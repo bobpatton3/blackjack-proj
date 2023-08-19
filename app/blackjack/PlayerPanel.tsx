@@ -1,26 +1,39 @@
 "use client"
 
 import { CardType } from "@/context/deckDataContext"
+import CardPanel from "./CardPanel";
 
-export default function PlayerPanel({ cards, deckLoaded }: { cards: CardType[], deckLoaded: boolean }) {
+export default function PlayerPanel({
+    cards,
+    playerCardIndices,
+    playerCount,
+    deckLoaded,
+    hitMeCallback,
+    standCallback,
+}: {
+    cards: CardType[],
+    playerCardIndices: number[],
+    playerCount: number,
+    deckLoaded: boolean,
+    hitMeCallback: () => void,
+    standCallback: () => void,
+}) {
+
+    function hitMe() {
+        hitMeCallback();
+    }
+
+    function stand() {
+        standCallback();
+    }
+
     return (
         <div>
-            <button onClick={() => { }} className="defaultButton">Hit Me!</button>
-            <button onClick={() => { }} className="defaultButton">Stand</button>
-
-            <div className="dealersTitleDiv">
-                Player Cards:
-            </div>
-
+            <CardPanel cards={cards} cardIndices={playerCardIndices} scoreCount={playerCount} deckLoaded={deckLoaded} player={"Player"} />
             {(deckLoaded) &&
-                <div className="dealerCardImagesDiv">
-                    <div className="singleCardImageDiv">
-                        <img src={cards[0].image} alt={cards[0].value + " " + cards[0].suit} width="100" />
-                    </div>
-
-                    <div className="singleCardImageDiv">
-                        <img src={cards[2].image} alt={cards[2].value + " " + cards[2].suit} width="100" />
-                    </div>
+                <div>
+                    <button onClick={hitMe} className="defaultButton">Hit Me!</button>
+                    <button onClick={stand} className="defaultButton">Stand</button>
                 </div>
             }
         </div>

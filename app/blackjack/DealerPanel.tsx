@@ -4,25 +4,47 @@ import { useContext, useState } from "react";
 import { CardType, DeckDataContext, NewDeckInfoType } from "@/context/deckDataContext";
 import PlayerPanel from "./PlayerPanel"
 import DeckOfCardsAPIUtility from "./DeckOfCardsAPIUtility";
+import CardPanel from "./CardPanel";
 
 export default function DealerPanel() {
     const [deckLoaded, setDeckLoaded] = useState<boolean>(false);
     const [deckID, setDeckID] = useState<string>("none");
     const [cards, setCards] = useState<CardType[]>([]);
+    const [values, setValues] = useState<number[]>([]);
+    const [deckIndex, setDeckIndex] = useState<number>(0);
+    const [dealerCount, setDealerCount] = useState<number>(0);
+    const [playerCount, setPlayerCount] = useState<number>(0);
+    const [playerCardIndices, setPlayerCardIndices] = useState<number[]>([]);
+    const [dealerCardIndices, setDealerCardIndices] = useState<number[]>([]);
     const deckDataContext = useContext(DeckDataContext);
 
     function setDeck(newDeck: NewDeckInfoType) {
         console.log("setDeck: " + newDeck.deck_id);
-        deckDataContext.setDeck(newDeck);
-        setDeckID(deckDataContext.deck.deck_id);
-        setCards(deckDataContext.deck.cards);
+        setDeckID(newDeck.deck_id);
         setDeckLoaded(true);
+        setReshuffledDeck(newDeck);
     }
 
     function setReshuffledDeck(newDeck: NewDeckInfoType) {
         console.log("setReshuffledDeck: " + newDeck.deck_id);
         deckDataContext.setDeck(newDeck);
-        setCards(deckDataContext.deck.cards);
+        setCards(newDeck.cards);
+        initializeValuesArrayWithShuffledDeck(newDeck.cards);
+    }
+
+    function initializeValuesArrayWithShuffledDeck(cardsParam: CardType[]) {
+        const newValuesArray: number[] = [];
+        cardsParam.forEach((card) => {
+            if (card.value === "ACE") newValuesArray.push(11);
+            else if (["KING", "QUEEN", "JACK"].includes(card.value)) newValuesArray.push(10);
+            else newValuesArray.push(parseInt(card.value));
+        });
+        setValues(newValuesArray);
+        setDealerCardIndices([1, 3]);
+        setPlayerCardIndices([0, 2]);
+        setDealerCount(getCount([1, 3], newValuesArray));
+        setPlayerCount(getCount([0, 2], newValuesArray));
+        setDeckIndex(4);
     }
 
     function shuffleOnClick() {
@@ -35,26 +57,50 @@ export default function DealerPanel() {
         }
     }
 
+    function hitPlayerCallback() {
+        playerCardIndices.push(deckIndex);
+        setPlayerCardIndices(playerCardIndices);
+        setDeckIndex(deckIndex + 1);
+        setCounts();
+    }
+
+    function getCount(cardIndices: number[], valuesArray: number[]) {
+        let handSum: number = 0;
+        let aceCount: number = 0;
+        cardIndices.forEach((i) => {
+            handSum += valuesArray[i];
+            if (valuesArray[i] === 11) aceCount += 1;
+        });
+        while (handSum > 21 && aceCount > 0) {
+            console.log(`handSum = ${handSum} ;  aceCount = ${aceCount}`);
+            handSum -= 10;
+            aceCount -= 1;
+        }
+        console.log(`returning handSum = ${handSum}`);
+        return handSum;
+    }
+
+    function setCounts() {
+        console.log("getDealer Count");
+        setDealerCount(getCount(dealerCardIndices, values));
+        console.log("getPlayer Count");
+        setPlayerCount(getCount(playerCardIndices, values));
+    }
+
+    function evaluateGame() {
+        console.log("evaluateGame");
+        setCounts();
+    }
+
     return (
         <div>
-            <button onClick={shuffleOnClick} className="defaultButton">Shuffle</button>
-
-            <div className="dealersTitleDiv">
-                Dealer Cards:
+            <div className="shuffleAndDeckStatus">
+                <button onClick={shuffleOnClick} className="defaultButton">Shuffle</button>
+                <div className="deckStatus">(Cards Remaining: {52 - deckIndex})</div>
             </div>
 
-            {(deckLoaded) &&
-                <div className="dealerCardImagesDiv">
-                    <div className="singleCardImageDiv">
-                        <img src={cards[1].image} alt={cards[1].value + " " + cards[1].suit} width="100" />
-                    </div>
-
-                    <div className="singleCardImageDiv">
-                        <img src={cards[3].image} alt={cards[3].value + " " + cards[3].suit} width="100" />
-                    </div>
-                </div>
-            }
-            <PlayerPanel cards={cards} deckLoaded={deckLoaded} />
+            <CardPanel cards={cards} cardIndices={dealerCardIndices} scoreCount={dealerCount} deckLoaded={deckLoaded} player={"Dealer"} />
+            <PlayerPanel cards={cards} playerCardIndices={playerCardIndices} playerCount={playerCount} deckLoaded={deckLoaded} hitMeCallback={hitPlayerCallback} standCallback={evaluateGame} />
         </div>
     )
 }
