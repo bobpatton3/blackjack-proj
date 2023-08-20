@@ -8,19 +8,21 @@ export default function CardPanel({
     scoreCount,
     deckLoaded,
     player,
+    wins,
 }: {
     cards: CardType[],
     cardIndices: number[],
     scoreCount: number,
     deckLoaded: boolean,
     player: string,
+    wins: number,
 }) {
 
     function singleCardStyle(ndx: number): any {
         return {
             "position": "absolute",
             "left": 30 * ndx,
-            "z-index": ndx,
+            "zIndex": ndx,
         };
     }
 
@@ -29,7 +31,7 @@ export default function CardPanel({
             {(deckLoaded) &&
                 <div>
                     <div className="dealersTitleDiv">
-                        {player} Count: {scoreCount}
+                        {player} Count: {scoreCount},  {player} Hands: {wins}
                     </div>
 
                     <div className="dealerCardImagesDiv">

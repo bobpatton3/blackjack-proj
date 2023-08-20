@@ -17,7 +17,16 @@ body {
   color: white;
   padding: 0.3rem 0.6rem;
   font-size: 12pt;
-  margin: 2rem 1rem 0rem 2rem;
+  margin: 2rem 0rem 0rem 2rem;
+  border-radius: 0.2rem;
+}
+.defaultButton:disabled {
+  border: black;
+  background-color: rgb(134, 69, 69);
+  color: rgb(111, 108, 108);
+  padding: 0.3rem 0.6rem;
+  font-size: 12pt;
+  margin: 2rem 0rem 0rem 2rem;
   border-radius: 0.2rem;
 }
 .shuffleAndDeckStatus {

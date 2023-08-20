@@ -10,13 +10,19 @@ export default function PlayerPanel({
     deckLoaded,
     hitMeCallback,
     standCallback,
+    hitMeButtonDisabled,
+    playerWins,
+    resetWinCounts,
 }: {
     cards: CardType[],
     playerCardIndices: number[],
     playerCount: number,
     deckLoaded: boolean,
     hitMeCallback: () => void,
-    standCallback: () => void,
+    standCallback: (playerCount: number) => void,
+    hitMeButtonDisabled: boolean,
+    playerWins: number,
+    resetWinCounts: () => void,
 }) {
 
     function hitMe() {
@@ -24,16 +30,24 @@ export default function PlayerPanel({
     }
 
     function stand() {
-        standCallback();
+        standCallback(playerCount);
     }
 
     return (
         <div>
-            <CardPanel cards={cards} cardIndices={playerCardIndices} scoreCount={playerCount} deckLoaded={deckLoaded} player={"Player"} />
+            <CardPanel
+                cards={cards}
+                cardIndices={playerCardIndices}
+                scoreCount={playerCount}
+                deckLoaded={deckLoaded}
+                player={"Player"}
+                wins={playerWins}
+            />
             {(deckLoaded) &&
                 <div>
-                    <button onClick={hitMe} className="defaultButton">Hit Me!</button>
-                    <button onClick={stand} className="defaultButton">Stand</button>
+                    <button onClick={hitMe} className="defaultButton" disabled={hitMeButtonDisabled}>Hit Me!</button>
+                    <button onClick={stand} className="defaultButton" disabled={hitMeButtonDisabled}>Stand</button>
+                    <button onClick={resetWinCounts} className="defaultButton" >Reset Wins</button>
                 </div>
             }
         </div>

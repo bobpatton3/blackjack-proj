@@ -8,14 +8,19 @@ import CardPanel from "./CardPanel";
 
 export default function DealerPanel() {
     const [deckLoaded, setDeckLoaded] = useState<boolean>(false);
+    const [hitMeButtonDisabled, setHitMeButtonDisabled] = useState<boolean>(false);
+    const [dealButtonDisabled, setDealButtonDisabled] = useState<boolean>(false);
     const [deckID, setDeckID] = useState<string>("none");
     const [cards, setCards] = useState<CardType[]>([]);
     const [values, setValues] = useState<number[]>([]);
     const [deckIndex, setDeckIndex] = useState<number>(0);
     const [dealerCount, setDealerCount] = useState<number>(0);
     const [playerCount, setPlayerCount] = useState<number>(0);
+    const [dealerWins, setDealerWins] = useState<number>(0);
+    const [playerWins, setPlayerWins] = useState<number>(0);
     const [playerCardIndices, setPlayerCardIndices] = useState<number[]>([]);
     const [dealerCardIndices, setDealerCardIndices] = useState<number[]>([]);
+    const [winner, setWinner] = useState<string>("");
     const deckDataContext = useContext(DeckDataContext);
 
     function setDeck(newDeck: NewDeckInfoType) {
@@ -55,6 +60,9 @@ export default function DealerPanel() {
             console.log("shuffleOnClick: deckID = " + deckID);
             DeckOfCardsAPIUtility.shuffleDeck(deckID, setReshuffledDeck);
         }
+        setHitMeButtonDisabled(false);
+        setDealButtonDisabled(false);
+        setWinner("");
     }
 
     function hitPlayerCallback() {
@@ -62,6 +70,19 @@ export default function DealerPanel() {
         setPlayerCardIndices(playerCardIndices);
         setDeckIndex(deckIndex + 1);
         setCounts();
+
+        const playerCnt = getCount(playerCardIndices, values);
+        if (playerCnt >= 21) endGame(playerCnt);
+    }
+
+    function dealOnClick() {
+        setDealerCardIndices([deckIndex + 1, deckIndex + 3]);
+        setPlayerCardIndices([deckIndex, deckIndex + 2]);
+        setDealerCount(getCount([deckIndex + 1, deckIndex + 3], values));
+        setPlayerCount(getCount([deckIndex, deckIndex + 2], values));
+        setDeckIndex(deckIndex + 4);
+        setHitMeButtonDisabled(false);
+        setWinner("");
     }
 
     function getCount(cardIndices: number[], valuesArray: number[]) {
@@ -87,20 +108,59 @@ export default function DealerPanel() {
         setPlayerCount(getCount(playerCardIndices, values));
     }
 
-    function evaluateGame() {
-        console.log("evaluateGame");
-        setCounts();
+    function resetWinCounts() {
+        setDealerWins(0);
+        setPlayerWins(0);
     }
+
+    function endGame(playerCnt: number) {
+        console.log("endGame");
+        setHitMeButtonDisabled(true);
+        if (playerCnt > 21) {
+            setWinner("Player busts - dealer wins.");
+            setDealerWins(dealerWins + 1)
+        } else if (playerCnt > dealerCount) {
+            setWinner("Player wins!");
+            setPlayerWins(playerWins + 1)
+        } else if (dealerCount > playerCnt) {
+            setWinner("Dealer wins.");
+            setDealerWins(dealerWins + 1)
+        } else {
+            setWinner("Tie.");
+        }
+        if (deckIndex > 42) setDealButtonDisabled(true);
+    }
+
+
 
     return (
         <div>
             <div className="shuffleAndDeckStatus">
                 <button onClick={shuffleOnClick} className="defaultButton">Shuffle</button>
+                <button onClick={dealOnClick} className="defaultButton" disabled={dealButtonDisabled}>Deal</button>
                 <div className="deckStatus">(Cards Remaining: {52 - deckIndex})</div>
             </div>
 
-            <CardPanel cards={cards} cardIndices={dealerCardIndices} scoreCount={dealerCount} deckLoaded={deckLoaded} player={"Dealer"} />
-            <PlayerPanel cards={cards} playerCardIndices={playerCardIndices} playerCount={playerCount} deckLoaded={deckLoaded} hitMeCallback={hitPlayerCallback} standCallback={evaluateGame} />
+            <CardPanel
+                cards={cards}
+                cardIndices={dealerCardIndices}
+                scoreCount={dealerCount}
+                deckLoaded={deckLoaded}
+                player={"Dealer"}
+                wins={dealerWins}
+            />
+            <PlayerPanel
+                cards={cards}
+                playerCardIndices={playerCardIndices}
+                playerCount={playerCount}
+                deckLoaded={deckLoaded}
+                hitMeCallback={hitPlayerCallback}
+                standCallback={endGame}
+                hitMeButtonDisabled={hitMeButtonDisabled}
+                playerWins={playerWins}
+                resetWinCounts={resetWinCounts}
+            />
+            <div className="shuffleAndDeckStatus">{winner}</div>
         </div>
     )
 }
