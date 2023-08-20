@@ -126,7 +126,8 @@ export default function DealerPanel() {
             setWinner("Dealer wins.");
             setDealerWins(dealerWins + 1)
         } else {
-            setWinner("Tie.");
+            setWinner("Tie - Dealer wins.");
+            setDealerWins(dealerWins + 1)
         }
         if (deckIndex > 42) setDealButtonDisabled(true);
     }
@@ -160,7 +161,7 @@ export default function DealerPanel() {
                 playerWins={playerWins}
                 resetWinCounts={resetWinCounts}
             />
-            <div className="shuffleAndDeckStatus">{winner}</div>
+            <div className="dealersTitleDiv">{winner}</div>
         </div>
     )
 }
