@@ -102,9 +102,7 @@ export default function DealerPanel() {
     }
 
     function setCounts() {
-        console.log("getDealer Count");
         setDealerCount(getCount(dealerCardIndices, values));
-        console.log("getPlayer Count");
         setPlayerCount(getCount(playerCardIndices, values));
     }
 
