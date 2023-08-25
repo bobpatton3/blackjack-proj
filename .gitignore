@@ -18,6 +18,9 @@
 # misc
 .DS_Store
 *.pem
+*.cy.js.mp4
+*.cy.ts.mp4
+*.cy.tsx.mp4
 
 # debug
 npm-debug.log*
